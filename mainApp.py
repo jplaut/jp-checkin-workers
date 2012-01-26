@@ -128,6 +128,7 @@ def get_checkins(username, database, token):
 			checkinsTemp = fql("{%s OFFSET %s\",%s}" % (query1, checkinOffset, query2), token)['data'][1]['fql_result_set']
 			checkins+=checkinsTemp
 			checkinOffset+=offsetInterval
+			print checkins
 		
 		database.insert({'username':username, 'checkins':checkins})
 	else:
@@ -161,9 +162,9 @@ def welcome():
 		database = connect_to_database()
 		checkinCollection = database.checkins
 		checkins = get_checkins(username, checkinCollection, access_token)
-		checkinsSorted = sort_checkins(checkins)
+		#checkinsSorted = sort_checkins(checkins)
 		
-		return Template(filename='templates/index.html').render(name=username, checkinsSorted = checkinsSorted)
+		return Template(filename='templates/index.html').render(name=username, checkinsSorted = checkins)
 	else:
 		return Template(filename='templates/welcome.html').render()
 		
