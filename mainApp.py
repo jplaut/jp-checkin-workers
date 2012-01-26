@@ -16,7 +16,7 @@ app.config.from_object(__name__)
 if os.environ.get('FACEBOOK_APP_ID'):
 	app.config.from_object('conf.Config')
 else:
-	app.config.from_envvar('MAIN_CONFIG')
+	app.config.from_envvar('FLASK_CONFIG')
 
 APP_ID = os.environ.get('FACEBOOK_APP_ID')
 APP_SECRET = os.environ.get('FACEBOOK_SECRET')
@@ -115,7 +115,7 @@ def get_home():
 
 def get_checkins(username, database, token):
 	checkinOffset = 0
-	offsetInterval=300
+	offsetInterval=100
 	checkinsTemp = []
 	checkins = []
 	
@@ -126,9 +126,8 @@ def get_checkins(username, database, token):
 	if not database.find_one({'username':username}):
 		while checkinsTemp or checkinOffset == 0:	
 			checkinsTemp = fql("{%s OFFSET %s\",%s}" % (query1, checkinOffset, query2), token)['data'][1]['fql_result_set']
-			checkins+=sort_checkins(checkinsTemp)
+			checkins+=checkinsTemp
 			checkinOffset+=offsetInterval
-			
 		
 		database.insert({'username':username, 'checkins':checkins})
 	else:
@@ -137,15 +136,16 @@ def get_checkins(username, database, token):
 	return database.find_one({'username':username})['checkins']
  	
 def sort_checkins(checkins_unsorted):
-	checkins_dict={}
+	checkins_tuple=[]
 	for checkin in checkins_unsorted:
-		checkins_dict[checkin['page_id']]=checkin['author_uid']
+		checkins_tuple.append((checkin['page_id'], checkin['author_uid']))
 
 	checkins_sorted={}
 	d = defaultdict(list)
 
-	for k, v in checkins_dict.items():
-		d[k].append(v)
+	for k, v in checkins_tuple:
+		if not str(v) in d[str(k)]:
+			d[str(k)].append(str(v))
 
 	return dict(d)
 
@@ -162,7 +162,6 @@ def welcome():
 		checkinCollection = database.checkins
 		checkins = get_checkins(username, checkinCollection, access_token)
 		checkinsSorted = sort_checkins(checkins)
-		print checkins
 		
 		return Template(filename='templates/index.html').render(name=username, checkinsSorted = checkinsSorted)
 	else:

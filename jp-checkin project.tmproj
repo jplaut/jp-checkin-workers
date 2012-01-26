@@ -10,7 +10,7 @@
 			<key>filename</key>
 			<string>mainApp.py</string>
 			<key>lastUsed</key>
-			<date>2012-01-24T02:54:57Z</date>
+			<date>2012-01-23T21:07:08Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -18,7 +18,7 @@
 			<key>filename</key>
 			<string>conf.py</string>
 			<key>lastUsed</key>
-			<date>2012-01-24T02:54:57Z</date>
+			<date>2012-01-23T21:07:08Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -50,30 +50,14 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>12</integer>
+				<integer>18</integer>
 				<key>line</key>
-				<integer>127</integer>
+				<integer>117</integer>
 			</dict>
-			<key>columnSelection</key>
-			<false/>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>117</integer>
-			<key>selectFrom</key>
-			<dict>
-				<key>column</key>
-				<integer>3</integer>
-				<key>line</key>
-				<integer>127</integer>
-			</dict>
-			<key>selectTo</key>
-			<dict>
-				<key>column</key>
-				<integer>15</integer>
-				<key>line</key>
-				<integer>127</integer>
-			</dict>
+			<integer>89</integer>
 		</dict>
 		<key>templates/index.html</key>
 		<dict>
@@ -99,6 +83,6 @@
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{196, 4}, {1009, 1024}}</string>
+	<string>{{108, 4}, {844, 1024}}</string>
 </dict>
 </plist>
