@@ -8,7 +8,8 @@ import random
 
 from pyres.exceptions import NoQueueError
 from pyres.job import Job
-from pyres import ResQ, Stat, __version__
+from pyres import Stat, __version__
+from myres import ResQ
 
 
 
@@ -283,7 +284,7 @@ class Worker(object):
                                        grep pyres_worker").split("\n"))
 
     @classmethod
-    def run(cls, queues, server="localhost:6379", password='', interval=None):
+    def run(cls, queues, server="localhost:6379", password=None, interval=None):
         worker = cls(queues=queues, server=server, password=password)
         if interval is not None:
             worker.work(interval)
