@@ -42,7 +42,7 @@ class GetCheckinMetadata:
 	def perform(checkin_id, user, token):
 		checkin_metadata = {}
 		
-		checkin_metadata_all = fb_call(str(checkin_id), args={'access_token': token})
+		checkin_metadata_all = fb_call(checkin_id, args={'access_token': token})
 		
 		if 'from' in checkin_metadata_all:
 			if 'name' in checkin_metadata_all['from']:
@@ -75,5 +75,5 @@ class AggregateCheckins:
 		checkins = fql("{%s, %s}" % (query1, query2), token)['data'][1]['fql_result_set']
 		
 		for checkin in checkins:
-			redisQueue.enqueue(GetCheckinMetadata, checkin['checkin_id'], user, token)
+			redisQueue.enqueue(GetCheckinMetadata, str(checkin['checkin_id']), user, token)
 	
