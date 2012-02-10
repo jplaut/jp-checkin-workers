@@ -56,7 +56,7 @@ class AggregateCheckins:
 		checkin_metadata = {}
 		collection = db[user]
 		
-		checkins = fb_call('checkins?id=%s' % friend, args={'limit':2000, 'access_token':token})
+		checkins = fb_call('%s/checkins' % friend, args={'limit':2000, 'access_token':token})
 		
 		for checkin in checkins['data']:
 			if 'id' in checkin:
