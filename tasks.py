@@ -40,9 +40,9 @@ class GetFriends:
 	queue = "get_friends"
 	
 	@staticmethod	
-	def perform(user, token, limit, offset):
+	def perform(user, offset, limit, token):
 		
-		friends = fql("SELECT uid2 FROM friend WHERE uid1=me() LIMIT %s OFFSET %s" % (limit, offset), token)
+		friends = fql("SELECT uid2 FROM friend WHERE uid1=me()", token, args={'limit':limit, 'offset':offset})
 		
 		for friend in friends['data']:
 			redisQueue.enqueue(AggregateCheckins, user, friend['uid2'], token)
