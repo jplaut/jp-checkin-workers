@@ -71,7 +71,6 @@ class AggregateCheckins:
 		payload = {'batch':'[%s]' % batch, 'method':'post','access_token':token}
 		
 		r = requests.post(baseURL, data=payload)
-		redisObject.set("request", r.text)
 		
 		dataJSON = json.loads(r.text)
 		
