@@ -66,8 +66,8 @@ class AggregateCheckins:
 		batch = ""
 		for friend in friends:
 			#while friends.index(friend) != len(friends)-1:
-			batch += "{'method':'GET','relative_url':'%s/checkins'}," % friend['id']
-			#batch += "{'method':'GET','relative_url':'%s/checkins'}" % friend['id']
+			batch += "{'method':'GET','relative_url':'%s/checkins'}," % friend
+			#batch += "{'method':'GET','relative_url':'%s/checkins'}" % friend
 		payload = {'batch':'[%s]' % batch, 'method':'post','access_token':token, 'limit':3000}
 
 		r = requests.post(baseURL, data=payload)
