@@ -11,5 +11,5 @@ redisPassword = environ.get("REDIS_QUEUE_PASSWORD")
 redisObject = redis.Redis(host=redisHost, port=redisPort, password=redisPassword)
 
 r = ResQ(redisObject)
-w = Worker(queues=['aggregate_checkins', 'get_friends'], server=r)
+w = Worker(queues=['*'], server=r)
 w.work()

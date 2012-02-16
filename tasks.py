@@ -1,12 +1,15 @@
 from os import environ
-import pymongo
 import urllib
 import urllib2
+import ast
+import simplejson as json
 from collections import defaultdict
+
+import pymongo
 import redis
 import pyres
-import simplejson as json
-from flask import Flask, request
+import requests
+
 
 DBPATH=environ.get('MONGODBPATH')
 DBNAME=environ.get('MONGODBDATABASE')
@@ -33,32 +36,57 @@ def fql(fql, token, args=None):
 						
 def fb_call(call, args=None):
 	return json.loads(urllib2.urlopen("https://graph.facebook.com/" + call +
-									  '?' + urllib.urlencode(args)).read())	
-						
+									  '?' + urllib.urlencode(args)).read())
+											
+							
 class GetFriends:
 	
-	queue = "get_friends"
+	queue = "*"
 	
 	@staticmethod	
 	def perform(user, offset, limit, token):
+		friendsArray = []
 		
-		friends = fql("SELECT uid2 FROM friend WHERE uid1=me()", token, args={'limit':limit, 'offset':offset})
+		friendsRaw = fql("SELECT uid2 FROM friend WHERE uid1=me()", token, args={'limit':limit, 'offset':offset})
 		
 		for friend in friends['data']:
-			redisQueue.enqueue(AggregateCheckins, user, friend['uid2'], token)
+			friendsArray.append(friend['uid2'])
+		
+		redisQueue.enqueue(AggregateCheckins, user, friendsArray, token)
+			
 						
 class AggregateCheckins:
 	
-	queue = "aggregate_checkins"
+	queue = "*"
 		
 	@staticmethod	
-	def perform(user, friend, token):
+	def perform(user, friends, token):
+		
+		baseURL = "https://graph.facebook.com/"
+		batch = ""
+		for friend in friends:
+			#while friends.index(friend) != len(friends)-1:
+			batch += "{'method':'GET','relative_url':'%s/checkins'}," % friend['id']
+			#batch += "{'method':'GET','relative_url':'%s/checkins'}" % friend['id']
+		payload = {'batch':'[%s]' % batch, 'method':'post','access_token':token, 'limit':3000}
+
+		r = requests.post(baseURL, data=payload)
+		dataJSON = json.loads(r.text)
+
+		for call in dataJSON:
+			checkins = ast.literal_eval(call['body'])['data']
+			redisQueue.enqueue(MoveCheckinsToDatabase, checkins, user)
+		
+				
+class MoveCheckinsToDatabase:
+	
+	queue = "*"
+	
+	@staticmethod
+	def perform(checkins, user):
 		checkin_metadata = {}
-		collection = db[user]
 		
-		checkins = fb_call('%s/checkins' % friend, args={'limit':2000, 'access_token':token})
-		
-		for checkin in checkins['data']:
+		for checkin in checkins:
 			if 'id' in checkin:
 				if 'from' in checkin:
 					if 'name' in checkin['from']:
@@ -75,6 +103,7 @@ class AggregateCheckins:
 					if 'location' in checkin['place']:
 						checkin_metadata['place_city'] = checkin['place']['location']
 				
+				collection = db[user]
 				collection.insert(checkin_metadata)
 			else:
 				pass
