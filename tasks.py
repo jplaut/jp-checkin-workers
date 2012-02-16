@@ -49,7 +49,7 @@ class GetFriends:
 		
 		friendsRaw = fql("SELECT uid2 FROM friend WHERE uid1=me()", token, args={'limit':limit, 'offset':offset})
 		
-		for friend in friends['data']:
+		for friend in friendsRaw['data']:
 			friendsArray.append(friend['uid2'])
 		
 		redisQueue.enqueue(AggregateCheckins, user, friendsArray, token)
