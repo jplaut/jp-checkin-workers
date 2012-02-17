@@ -10,6 +10,8 @@ import redis
 import pyres
 import requests
 
+APP_ID = os.environ.get('FACEBOOK_APP_ID')
+APP_SECRET = os.environ.get('FACEBOOK_SECRET')
 
 DBPATH=environ.get('MONGODBPATH')
 DBNAME=environ.get('MONGODBDATABASE')
